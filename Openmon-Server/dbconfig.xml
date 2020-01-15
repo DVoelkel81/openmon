@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <DBServer name="Datenbank Server">
+    <servertyp>mysql</servertyp>
+    <host>134.255.244.20</host>
+    <port>3306</port>
+    <user>django</user>
+    <password>7qhhr5DFqkAzEpB8</password>
+    <database>tsupervision</database>
+  </DBServer>
+  <EmailServer name="E-Mail Server">
+    <sender>stoerung@tuxhornbhkw.de</sender>
+    <smtpserver>mail.tuxhornbhkw.de</smtpserver>
+    <smtpusername>stoerung@tuxhornbhkw.de</smtpusername>
+    <smtppassword>68nq5shgaTeujwnK</smtppassword>
+    <smtpport>587</smtpport>
+  </EmailServer>
+</root> 

@@ -5,7 +5,7 @@ __author__ = "Dennis Voelkel"
 __copyright__ = "Copyright 2019, Openmon"
 __credits__ = ["Dennis Voelkel"]
 __license__ = "MIT"  #
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __maintainer__ = "Dennis Voelkel"
 __email__ = "dennis.voelkel@outlook.com"
 __status__ = "Develop"
@@ -18,7 +18,6 @@ to the requested functions
 import sys
 import logging
 import os
-#import pymysql
 import datetime
 from time import *
 import xml.etree.ElementTree as ET
@@ -34,7 +33,7 @@ import DeviceLogging
 
 #create logging folder
 #logdirectory = os.path.dirname(os.path.abspath(__file__)) + "\\log" #Windows
-logdirectory = os.path.dirname(os.path.abspath(__file__)) + "/log" #MAC
+logdirectory = os.path.dirname(os.path.abspath(__file__)) + "/log" #Linux
 
 #check if folder exists
 if not os.path.exists(logdirectory):
@@ -160,3 +159,8 @@ def socketanalysis(data):
     except:
         logger.error("Error loading function DeviceStartsLog")
     
+    try:
+        #Insert the Processdata into the Database
+        DeviceLogging.DeviceStateLog(DataArray, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+    except:
+        logger.error("Error loading function DeviceStateLog")    

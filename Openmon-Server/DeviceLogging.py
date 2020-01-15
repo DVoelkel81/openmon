@@ -5,7 +5,7 @@ __author__ = "Dennis Voelkel"
 __copyright__ = "Copyright 2019, Openmon"
 __credits__ = ["Dennis Voelkel"]
 __license__ = "MIT"  #
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __maintainer__ = "Dennis Voelkel"
 __email__ = "dennis.voelkel@outlook.com"
 __status__ = "Develop"
@@ -125,7 +125,30 @@ def DeviceStartsLog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         
     except:
         logger.error("Unknown Failure in DeviceTemplog ")     
-   
+
+def DeviceStateLog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+    #hier weiter
+    """Devicelog function will insert the Starts data directly to the Database"""
+    
+    try:
+           
+        #Zeitstempel Aktuelle Zeit
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        Tempvalue = '0'
+            
+        sqlleistung = """INSERT INTO supervision_chpstatus (CHPIDGEO, CHPstate1, CHPstate2, 
+        CHPstate3, CHPstate4, CHPstate5, CHPstate6, CHPstate7, CHPstate8, CHPstate9, CHPstate10, CHPReginsertfrom, CHPDReginserttime) VALUE ('{0}', '{1}', '{2}', '{3}', 
+        '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}')""".format(scDataArray[0], scDataArray[7], scDataArray[8], scDataArray[9], scDataArray[10], scDataArray[11], scDataArray[12], scDataArray[13], Tempvalue, Tempvalue, Tempvalue, scDataArray[0], timestamp)
+        #logger.info("update des Counter")
+        
+                
+        #write informaiton to DB
+        dbcom.WriteToDatabase(sqlleistung, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+        #logger.info("write to DB")
+        
+    except:
+        logger.error("Unknown Failure in DeviceStatuslog ") 
     
 
 ########################################

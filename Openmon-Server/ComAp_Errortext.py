@@ -52,16 +52,23 @@ def getErrorText(data,dbhost,dbport,dbuser,dbpassword,dbdatabase,emailsender,ema
     
     #Create Alarmtext
     #create Alarmlist
-    Alarm1 = []
-    for Al in range(22, 72, 1): # Alarm 1
-        if data[Al] != 0:
-            Alarm1.append(str(chr(data[Al])))
-            #print(str(chr(data[Al])))
+    genalarm1 = data["Alarmtext1"]
+    genalarm2 = data["Alarmtext2"]
+    genalarm3 = data["Alarmtext3"]
+    genalarm4 = data["Alarmtext4"]
+    genalarm5 = data["Alarmtext5"]
+    genalarm6 = data["Alarmtext6"]
+    genalarm7 = data["Alarmtext7"]
+    genalarm8 = data["Alarmtext8"]
+    genalarm9 = data["Alarmtext9"]
+    genalarm10 = data["Alarmtext10"]
+    genalarm11 = data["Alarmtext11"]
+    genalarm12 = data["Alarmtext12"]
+    genalarm13 = data["Alarmtext13"]
+    genalarm14 = data["Alarmtext14"]
+    genalarm15 = data["Alarmtext15"]
+    genalarm16 = data["Alarmtext16"]
     
-    genalarm1 = ''.join(map(str,Alarm1))
-    #logger.info(genalarm1)
-    del Alarm1 # Löschen der Variable
-    AL = None #Löschen der Variablen
     
     #---------------------------------------------
     Alarm2 = []

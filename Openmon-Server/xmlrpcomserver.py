@@ -18,12 +18,22 @@ xml-rpc transmission
 import random
 import time
 import logging
+import sys
 import os
+import threading
 from socketserver import ThreadingMixIn
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
 from logging.handlers import RotatingFileHandler
 
+"""
+Import python system functions
+"""
+
+import dataanalysis
+"""
+Import project functions
+"""
 
 
 #logPath = "/var/log/xml-rpc-omserver.log" #linux
@@ -113,7 +123,22 @@ def logchp(chpdict):
     Logging CHP values
     """
     
-    print (chpdict.get('chpid'))
+    try:
+
+        data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+        #logger.info(len(data))
+        t = threading.Thread(name='dataanalysis', target=dataanalysis.socketanalysis, args=(chpdict,))
+        t.setDaemon(True)
+        t.start()
+        data = None
+
+       
+    except:
+        logger.info('Error in Array or analysis function!')
+        data = None
+        pass    
+    
+    #print (chpdict.get('chpid'))
     
     returnval = "ok"
     return returnval

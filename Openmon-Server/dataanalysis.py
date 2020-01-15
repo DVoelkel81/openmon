@@ -14,7 +14,9 @@ __status__ = "Develop"
 to the requested functions
 """
 
-# Generic/Built-in
+"""
+Generic/Built-in
+"""
 import sys
 import logging
 import os
@@ -23,7 +25,9 @@ from time import *
 import xml.etree.ElementTree as ET
 from logging.handlers import RotatingFileHandler
 
-# Own modules
+"""
+Own modules
+"""
 import ComAp_Errortext
 import checkdevicestatus
 import DeviceStateUpdate
@@ -33,15 +37,16 @@ import DeviceLogging
 
 #create logging folder
 #logdirectory = os.path.dirname(os.path.abspath(__file__)) + "\\log" #Windows
-logdirectory = os.path.dirname(os.path.abspath(__file__)) + "/log" #Linux
+#logdirectory = os.path.dirname(os.path.abspath(__file__)) + "/log" #Linux
 
 #check if folder exists
-if not os.path.exists(logdirectory):
-    os.makedirs(logdirectory)
+#if not os.path.exists(logdirectory):
+    #os.makedirs(logdirectory)
 
 
 # create logger
-logPath = os.path.dirname(os.path.abspath(__file__)) + "/log/dataanalysis.log" #LINUX
+logPath = "c:\\temp\\xml-rpc-omserver.log"
+#logPath = os.path.dirname(os.path.abspath(__file__)) + "/log/dataanalysis.log" #LINUX
 #logPath = os.path.dirname(os.path.abspath(__file__)) + "\\log\\analysis.log" #Windows
 logger = logging.getLogger("dataanalysis")
 logger.setLevel(logging.DEBUG)
@@ -53,7 +58,8 @@ logger.addHandler(handler)
 
 try:
     # Parse DBConfig.xml
-    tree = ET.parse('/home/supervision-script/dbconfig.xml')
+    tree = ET.parse(os.path.dirname(os.path.abspath(__file__)) + "/dbconfig.xml")
+    #tree = ET.parse('/home/supervision-script/dbconfig.xml')
     root = tree.getroot()
     for DBServer in root.findall('DBServer'):
         dbhost = DBServer.find('host').text
@@ -122,13 +128,14 @@ def socketanalysis(data):
         DataArray.append(256*data[76] + data[77]) #Motoroutgoing test 27 
         #logger.info(len(data))   
     
-    if DataArray[6] == 2:
+    if Data["Alarmtext1"]:
             
         #Read COmap Errortext
         ComAp_Errortext.getErrorText(data,dbhost,dbport,dbuser,dbpassword,dbdatabase,emailsender,emailsmtpserver,emailsmtpusername,emailsmtppassword,emailsmtpport)
         
     else:
-        pass #Weiterleitung im Programm, keine fehler im Genset        
+        pass #Weiterleitung im Programm, keine fehler im Genset
+    
     try:
         #Check the Status of Devie Information
         checkdevicestatus.statuscheck(DataArray, dbhost, dbport, dbuser, dbpassword, dbdatabase)

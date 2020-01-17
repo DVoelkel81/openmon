@@ -117,7 +117,7 @@ def modbusreadclient():
         data = {}
         
         #Insert Gensetnumber
-        data["chpid"] = gennumber
+        data["deviceid"] = gennumber
         
         #Read SQl for Modbus
         
@@ -228,7 +228,7 @@ def modbusreadclient():
                 
             for mailadresse in sendemail:
                 #Errormail.sendmail(smtpserver, smtpuser, smtppassword, smtpport, mailadresse[1], "Stoerung BHKW K" + str(256*errordata[20] + errordata[21]), "Es ist eine Stoerung an BHKW " + str(256*errordata[20] + errordata[21]) + " aufgetreten. \n Folgende Meldungen sind aufgetretten \n " +
-                Errormail.sendmail(smtpserver, smtpuser, smtppassword, smtpport, mailadresse[1], "Stoerung BHKW Kxyz", "Es ist eine Stoerung an BHKW Kxyz aufgetreten. \n Folgende Meldungen sind aufgetretten \n " +
+                Errormail.sendmail(smtpserver, smtpuser, smtppassword, smtpport, mailadresse[1], "Stoerung BHKW K" + data["deviceid"] + "", "Es ist eine Stoerung an BHKW " + data["deviceid"] + " aufgetreten. \n Folgende Meldungen sind aufgetretten \n " +
                                    data["Alarmtext1"] + " \n " + data["Alarmtext2"] + " \n " + data["Alarmtext3"] + " \n " + data["Alarmtext4"] + " \n " + data["Alarmtext5"] + " \n " + data["Alarmtext6"] + " \n " + 
                                    data["Alarmtext7"] + " \n " + data["Alarmtext8"] + " \n " + data["Alarmtext9"] + " \n " + data["Alarmtext10"] + " \n " + data["Alarmtext11"] + " \n " + data["Alarmtext12"] + " \n " + data["Alarmtext13"] + " \n " + 
                                    data["Alarmtext14"] + " \n " + data["Alarmtext15"] + " \n " + data["Alarmtext16"])

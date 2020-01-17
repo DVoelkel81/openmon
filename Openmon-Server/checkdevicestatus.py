@@ -43,7 +43,7 @@ formatter = logging.Formatter('%(asctime)s - %(threadName)s - %(levelname)s - %(
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-def statuscheck(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+def statuscheck(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     """Statuscheck use the transmited status from the Device and write it to the Database"""
     
     #Zerlegen des Statusbyte und vorbereitung fuer SQL
@@ -51,7 +51,7 @@ def statuscheck(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
 
     #Genset is Ready
     #if test[13] & 0x0002 == 0x0002:
-    if ((scDataArray[17] == 0x01) or (scDataArray[17] == 0x02) or (scDataArray[17] == 0x03)) and not(scDataArray[10] & 0x0001 == 0x0001):
+    if ((data["mode"] == 0x01) or (data["mode"] == 0x02) or (data["mode"] == 0x03)) and not(data["statusword4"] & 0x0001 == 0x0001):
         CHPStatus[0] = 0x00 #CHP in Operation
         CHPStatus[1] = 0x01 #CHP Ready
         CHPStatus[2] = 0x00 #CHP Warning
@@ -60,7 +60,7 @@ def statuscheck(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     else:
         pass
     #Genset in Operation
-    if scDataArray[10] & 0xC000 == 0xC000:
+    if data["statusword4"] & 0xC000 == 0xC000:
         CHPStatus[0] = 0x01 #CHP in Operation
         CHPStatus[1] = 0x00 #CHP Ready
         CHPStatus[2] = 0x00 #CHP Warning
@@ -69,7 +69,7 @@ def statuscheck(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     else:
         pass
     #Genset has a Warning
-    if scDataArray[9] & 0x8000 == 0x8000:
+    if data["statusword3"] & 0x8000 == 0x8000:
         CHPStatus[0] = 0x00 #CHP in Operation
         CHPStatus[1] = 0x00 #CHP Ready
         CHPStatus[2] = 0x01 #CHP Warning
@@ -79,7 +79,7 @@ def statuscheck(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         pass
 
     #Genset has an Alarm
-    if scDataArray[10] & 0x0001 == 0x0001:
+    if data["statusword4"] & 0x0001 == 0x0001:
         CHPStatus[0] = 0x00 #CHP in Operation
         CHPStatus[1] = 0x00 #CHP Ready
         CHPStatus[2] = 0x00 #CHP Warning
@@ -88,7 +88,7 @@ def statuscheck(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     else:
         pass
 
-    if scDataArray[17] == 0x00:
+    if data["mode"] == 0x00:
         CHPStatus[0] = 0x00 #CHP in Operation
         CHPStatus[1] = 0x00 #CHP Ready
         CHPStatus[2] = 0x00 #CHP Warning
@@ -100,13 +100,13 @@ def statuscheck(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     #logger.info(CHPStatus)
 
     #Auswertung Genset Mode
-    if scDataArray[17] == 0x00:
+    if data["mode"] == 0x00:
         CHPdevstatus = "OFF"
-    elif scDataArray[17] == 0x01:
+    elif data["mode"] == 0x01:
         CHPdevstatus = "MAN"
-    elif scDataArray[17] == 0x02:
+    elif data["mode"] == 0x02:
         CHPdevstatus = "SEM"
-    elif scDataArray[17] == 0x03:
+    elif data["mode"] == 0x03:
         CHPdevstatus = "AUTO"
 
         #logger.info(CHPdevstatus)
@@ -118,7 +118,7 @@ def statuscheck(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     #create the SQL Statement
     sql = """UPDATE supervision_chpgeodata SET CHPIDGEO = '{5}',
       CHPInoperation = '{0}', CHPReady = '{1}', CHPWarning = '{2}', CHPMalfunction = '{3}',
-      CHPOff = '{4}', CHPLastUpdate = '{6}', CHPDevStatus='{7}' WHERE CHPIDGEO = '{5}'""".format(CHPStatus[0], CHPStatus[1], CHPStatus[2], CHPStatus[3], CHPStatus[4], scDataArray[0], timestamp, CHPdevstatus)
+      CHPOff = '{4}', CHPLastUpdate = '{6}', CHPDevStatus='{7}' WHERE CHPIDGEO = '{5}'""".format(CHPStatus[0], CHPStatus[1], CHPStatus[2], CHPStatus[3], CHPStatus[4], data["deviceid"], timestamp, CHPdevstatus)
     
     #logger.info(sql)
     

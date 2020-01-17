@@ -69,8 +69,12 @@ def getErrorText(data,dbhost,dbport,dbuser,dbpassword,dbdatabase,emailsender,ema
     genalarm15 = data["Alarmtext15"]
     genalarm16 = data["Alarmtext16"]
     
-    deviceID = 256*data[20] + data[21] # Genset ID 
-    funcswitchID = 256*data[8] + data[9] # Funcswitch ID
+    deviceID = data["deviceid"] # Genset ID 
+    
+    if Data["Alarmtext1"]:
+        funcswitchID = 2 # Funcswitch ID
+    else:
+        funcswitchID = 1
                         
     #Zeitstempel Aktuelle Zeit
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')

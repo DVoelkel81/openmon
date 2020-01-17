@@ -43,19 +43,19 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def Deviceupdate(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+def Deviceupdate(Data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     """Deviceupdate function will only update the timer and counter on the device state, also reset the alarms in case of alarm is over"""
     
     #Zeitstempel Aktuelle Zeit
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     #If State will be true if Genset Error still exist or no error is activ
-    if scDataArray[6] == 1 or scDataArray[6] == 0:
+    if Data[6] == 1 or scDataArray[6] == 0:
         #Update BHKW Timer
         sql = """UPDATE supervision_chpgeodata SET CHPIDGEO = '{0}',
           CHPMaintenance_time1 = '{1}', CHPMaintenance_time2 = '{2}', CHPMaintenance_time3 = '{3}',
           CHPMaintenance_time4 = '{4}', CHPLastUpdate = '{5}', CHPkwhzaehler = '{6}', CHPkVArhzaehler = '{7}',
-          CHPbetriebsstunden = '{8}' WHERE CHPIDGEO = '{0}'""".format(scDataArray[0], scDataArray[1], scDataArray[2], scDataArray[3], scDataArray[4],  timestamp, scDataArray[14], scDataArray[15], scDataArray[16])
+          CHPbetriebsstunden = '{8}' WHERE CHPIDGEO = '{0}'""".format(data["deviceid"], data["servicetime1"], data["servicetime2"], data["servicetime3"], data["servicetime4"],  timestamp, scDataArray[14], scDataArray[15], scDataArray[16])
         
         #write informaiton to DB
         dbcom.WriteToDatabase(sql, dbhost, dbport, dbuser, dbpassword, dbdatabase)

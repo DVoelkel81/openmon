@@ -50,24 +50,24 @@ def Deviceupdate(Data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     #If State will be true if Genset Error still exist or no error is activ
-    if Data[6] == 1 or scDataArray[6] == 0:
-        #Update BHKW Timer
-        sql = """UPDATE supervision_chpgeodata SET CHPIDGEO = '{0}',
-          CHPMaintenance_time1 = '{1}', CHPMaintenance_time2 = '{2}', CHPMaintenance_time3 = '{3}',
-          CHPMaintenance_time4 = '{4}', CHPLastUpdate = '{5}', CHPkwhzaehler = '{6}', CHPkVArhzaehler = '{7}',
-          CHPbetriebsstunden = '{8}' WHERE CHPIDGEO = '{0}'""".format(data["deviceid"], data["servicetime1"], data["servicetime2"], data["servicetime3"], data["servicetime4"],  timestamp, scDataArray[14], scDataArray[15], scDataArray[16])
+    #if Data[6] == 1 or scDataArray[6] == 0:
+    #Update BHKW Timer
+    sql = """UPDATE supervision_chpgeodata SET CHPIDGEO = '{0}',
+    CHPMaintenance_time1 = '{1}', CHPMaintenance_time2 = '{2}', CHPMaintenance_time3 = '{3}',
+    CHPMaintenance_time4 = '{4}', CHPLastUpdate = '{5}', CHPkwhzaehler = '{6}', CHPkVArhzaehler = '{7}',
+    CHPbetriebsstunden = '{8}' WHERE CHPIDGEO = '{0}'""".format(data["deviceid"], data["servicetime1"], data["servicetime2"], data["servicetime3"], data["servicetime4"],  timestamp, data["khwcount"], data["kvarcount"], data["runhours"])
         
-        #write informaiton to DB
-        dbcom.WriteToDatabase(sql, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+    #write informaiton to DB
+    dbcom.WriteToDatabase(sql, dbhost, dbport, dbuser, dbpassword, dbdatabase)
 
 
     #If state will be Aktive if no error is active set Error to empty
-    if scDataArray[6] == 0:
+    if not Data["Alarmtext1"]:
         #Update Warnung
         sqlwarnupdate = """UPDATE supervision_chpgeodata SET CHPIDGEO = '{0}',
           CHPLastUpdate = '{1}', CHPAlarm1 = '{2}', CHPAlarm2 = '{3}', CHPAlarm3 = '{4}', CHPAlarm4 = '{5}', CHPAlarm5 = '{6}', CHPAlarm6 = '{7}',
           CHPAlarm7 = '{8}', CHPAlarm8 = '{9}', CHPAlarm9 = '{10}',CHPAlarm10 = '{11}', CHPAlarm11 = '{12}', CHPAlarm12 = '{13}',
-          CHPAlarm13 = '{14}', CHPAlarm14 = '{15}', CHPAlarm15 = '{16}', CHPAlarm16 = '{17}' WHERE CHPIDGEO = '{0}'""".format(scDataArray[0], timestamp, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
+          CHPAlarm13 = '{14}', CHPAlarm14 = '{15}', CHPAlarm15 = '{16}', CHPAlarm16 = '{17}' WHERE CHPIDGEO = '{0}'""".format(data["deviceid"], timestamp, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ')
         
         #write informaiton to DB
         dbcom.WriteToDatabase(sqlwarnupdate, dbhost, dbport, dbuser, dbpassword, dbdatabase)

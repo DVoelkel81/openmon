@@ -142,8 +142,7 @@ def logchp(chpdict):
     
     returnval = "ok"
     return returnval
-    
-    
+
 
 # run server
 def run_server(host="localhost", port=8000):

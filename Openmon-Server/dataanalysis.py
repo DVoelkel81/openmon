@@ -148,11 +148,11 @@ def socketanalysis(data):
     except:
         logger.error("Error loading function DeviceStateUpdate")
         
-    try:
+    #try:
         #Insert the Processdata into the Database
-        DeviceLogging.Devicelog(DataArray, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-    except:
-        logger.error("Error loading function Devicelog")
+       # DeviceLogging.Devicelog(data, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+    #except:
+        #logger.error("Error loading function Devicelog")
          
     try:
         #Insert the Processdata into the Database

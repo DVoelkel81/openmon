@@ -16,8 +16,6 @@ __status__ = "Develop"
 import sys
 import logging
 import os
-#import pymysql
-#import psycopg2
 import dbcom
 import datetime
 from time import *

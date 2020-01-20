@@ -17,7 +17,6 @@ __status__ = "Develop"
 import sys
 import logging
 import os
-#import pymysql
 import datetime
 import dbcom
 from time import *
@@ -71,7 +70,7 @@ def Devicelog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     except:
         logger.error("Unknown Failure in Powercounting ")
         
-def DeviceTemplog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+def DeviceTemplog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     """Devicelog function will insert the Temperatur data directly to the Database"""
     
     try:
@@ -82,8 +81,8 @@ def DeviceTemplog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         sqlleistung = """INSERT INTO supervision_chptemperature (CHPIDGEO, CHPwastgaspri, CHPwastgassec, 
         CHPTempHV, CHPTempRV, CHPboilertemp, CHPRoomtemp, CHPAWT, CHPMotorIN, CHPMotorOUT, CHPReginsertfrom, 
         CHPDReginserttime) VALUE ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', 
-        '{11}')""".format(scDataArray[0], scDataArray[20], scDataArray[21], scDataArray[22], scDataArray[23], '0', scDataArray[24], 
-                          scDataArray[25], scDataArray[26], scDataArray[27], scDataArray[0],timestamp)
+        '{11}')""".format(data["deviceid"], data["wastgastemppri"], data["wastgastempsec"], data["hcltemp"], data["hcctemp"], 0, data["roomtemp"], 
+                          data["exhaustgastemp"], data["motorintemp"], data["motorouttemp"], data["deviceid"],timestamp)
         #logger.info("update des Powercount")
         
                 
@@ -94,7 +93,7 @@ def DeviceTemplog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     except:
         logger.error("Unknown Failure in DeviceTemplog ")     
     
-def DeviceStartsLog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+def DeviceStartsLog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     #hier weiter
     """Devicelog function will insert the Starts data directly to the Database"""
     
@@ -103,7 +102,7 @@ def DeviceStartsLog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         #Zerlegen des Statusbyte und vorbereitung fuer SQL
         CHPStatus = bytearray(1)
         #Genset in Operation
-        if scDataArray[10] & 0xC000 == 0xC000:
+        if data["statusword4"] & 0xC000 == 0xC000:
             CHPStatus[0] = 0x01 #CHP in Operation
          
         else:
@@ -115,7 +114,7 @@ def DeviceStartsLog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
             
         sqlleistung = """INSERT INTO supervision_chprps (CHPIDGEO, CHPStartcounter, CHPbetriebsstunden, 
         CHPInoperation, CHPCMDinserttime) VALUE ('{0}', '{1}', '{2}', '{3}', 
-        '{4}')""".format(scDataArray[0], scDataArray[18], scDataArray[16], CHPStatus[0], timestamp)
+        '{4}')""".format(data["deviceid"], data["startcounter"], data["runhours"], CHPStatus[0], timestamp)
         #logger.info("update des Counter")
         
                 
@@ -126,7 +125,7 @@ def DeviceStartsLog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     except:
         logger.error("Unknown Failure in DeviceTemplog ")     
 
-def DeviceStateLog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+def DeviceStateLog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     #hier weiter
     """Devicelog function will insert the Starts data directly to the Database"""
     
@@ -139,7 +138,7 @@ def DeviceStateLog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
             
         sqlleistung = """INSERT INTO supervision_chpstatus (CHPIDGEO, CHPstate1, CHPstate2, 
         CHPstate3, CHPstate4, CHPstate5, CHPstate6, CHPstate7, CHPstate8, CHPstate9, CHPstate10, CHPReginsertfrom, CHPDReginserttime) VALUE ('{0}', '{1}', '{2}', '{3}', 
-        '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}')""".format(scDataArray[0], scDataArray[7], scDataArray[8], scDataArray[9], scDataArray[10], scDataArray[11], scDataArray[12], scDataArray[13], Tempvalue, Tempvalue, Tempvalue, scDataArray[0], timestamp)
+        '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}')""".format(data["deviceid"], data["statusword1"], data["statusword2"], data["statusword3"], data["statusword4"], data["statusword5"], data["statusword6"], data["statusword7"], Tempvalue, Tempvalue, Tempvalue, data["deviceid"], timestamp)
         #logger.info("update des Counter")
         
                 

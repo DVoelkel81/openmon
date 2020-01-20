@@ -27,7 +27,7 @@ import sys
 #########################
 #Windows Client
 #Funktioniert nicht als Exe, hier muss der Absolute Pfad hinein.
-logdirectory = os.path.dirname(os.path.abspath(__file__)) + "\\log"
+logdirectory = os.path.dirname(os.path.abspath(__file__)) + "/log"
 
 if not os.path.exists(logdirectory):
     os.makedirs(logdirectory)

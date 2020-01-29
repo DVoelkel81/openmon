@@ -90,7 +90,15 @@ except:
 
 #Function for Dataanalysis
 def socketanalysis(data):
-    """Put the incoming data into an array for analysis, converting and manitulation"""
+    """socketanalysis will transfer the incoming data to the separate functions for analysis
+    
+    :param data: The dict contains the complete CHP data from CHP
+    :type data: dict
+    
+    :returns: Nothing
+    :rtype: Nothing
+    
+    """    
     
     #Create a array for DAta
     #DataArray =[]
@@ -135,36 +143,14 @@ def socketanalysis(data):
         
     else:
         pass #Weiterleitung im Programm, keine fehler im Genset
-    
-    try:
-        #Check the Status of Devie Information
-        checkdevicestatus.statuscheck(data, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-    except:
-        logger.error("Error loading function checkdevicestatus")
-    
-    try:
-        #update the devicestate
-        DeviceStateUpdate.Deviceupdate(data, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-    except:
-        logger.error("Error loading function DeviceStateUpdate")
         
-    #try:
-        #Insert the Processdata into the Database
-       # DeviceLogging.Devicelog(data, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-    #except:
-        #logger.error("Error loading function Devicelog")
          
     try:
-        #Insert the Processdata into the Database
-        DeviceLogging.DeviceTemplog(DataArray, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+        #Insert the processdata from CHP into the Database
+        DeviceLogging.chpdatalog(DataArray, dbhost, dbport, dbuser, dbpassword, dbdatabase)
     except:
-        logger.error("Error loading function DevicelogTemp")
+        logger.error("Error loading function chpdatalog")
         
-    try:
-        #Insert the Processdata into the Database
-        DeviceLogging.DeviceStartsLog(DataArray, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-    except:
-        logger.error("Error loading function DeviceStartsLog")
     
     try:
         #Insert the Processdata into the Database

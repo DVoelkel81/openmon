@@ -114,9 +114,9 @@ def statuscheck(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     #http://mysql.lernenhoch2.de/lernen/mysql-anfanger/update-daten-andern/    
     
     #create the SQL Statement
-    sql = """UPDATE supervision_chpgeodata SET CHPIDGEO = '{5}',
-      CHPInoperation = '{0}', CHPReady = '{1}', CHPWarning = '{2}', CHPMalfunction = '{3}',
-      CHPOff = '{4}', CHPLastUpdate = '{6}', CHPDevStatus='{7}' WHERE CHPIDGEO = '{5}'""".format(CHPStatus[0], CHPStatus[1], CHPStatus[2], CHPStatus[3], CHPStatus[4], data["deviceid"], timestamp, CHPdevstatus)
+    sql = """UPDATE supervision_actdevicestate SET deviceid = '{5}',
+      stateinoperation = '{0}', stateready = '{1}', statewarning = '{2}', stateerror = '{3}',
+      statestop = '{4}', staterunning = '{6}', inserttime='{7}' WHERE deviceid = '{5}'""".format(CHPStatus[0], CHPStatus[1], CHPStatus[2], CHPStatus[3], CHPStatus[4], data["deviceid"], CHPStatus[0], timestamp)
     
     #logger.info(sql)
     

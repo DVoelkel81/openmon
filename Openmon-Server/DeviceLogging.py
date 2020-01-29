@@ -44,100 +44,178 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-def Devicelog(scDataArray,dbhost,dbport,dbuser,dbpassword,dbdatabase):
-    """Devicelog function will insert the process data directly to ghe Database"""
+        
+def chpdatalog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+    """chpdatalog function will insert the CHP data directly to the Database.
+    Some states will be decode from interger values that contains the states from the CHP,
+    analog values will also stored in the databese, all values inside of dict data will transfert.
     
-    try:
+    :param data: The dict contains the complete CHP data from CHP
+    :type data: dict
+    
+    :param dbhost: IP-Address or domain fromt the Server
+    :type dbhost: string
+    
+    :param dbhost: IP-Address or domain fromt the Database Server
+    :type dbhost: string
+    
+    :param dbuser: Database username
+    :type dbuser: string
+    
+    :param dbpassword: Database user password
+    :type dbpassword: string
+    
+    :param dbdatabase: Databasename
+    :type dbdatabase: string
+    
+    :returns: Nothing
+    :rtype: Nothing
+    
+    """    
+    
+    #decode Statuswords for SQL entry
+    CHPStatus = bytearray(5)
 
-        #--------------
-        if scDataArray[6] == 3:
+    #Genset is Ready
+    if ((data["mode"] == 0x01) or (data["mode"] == 0x02) or (data["mode"] == 0x03)) and not(data["statusword4"] & 0x0001 == 0x0001):
+        CHPStatus[0] = 0x00 #CHP in Operation
+        CHPStatus[1] = 0x01 #CHP Ready
+        CHPStatus[2] = 0x00 #CHP Warning
+        CHPStatus[3] = 0x00 #CHP Alarm
+        CHPStatus[4] = 0x00 #CHP Off
         
-            #Zeitstempel Aktuelle Zeit
-            timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')        
-            
-            sqlleistung = """INSERT INTO supervision_chppowercount (CHPPCIDGEO, CHPPCkwhzaehler, CHPPCkVArhzaehler, CHPPCinserttime) VALUE ('{0}', '{1}', '{2}', '{3}')""".format(scDataArray[0], scDataArray[14], scDataArray[15], timestamp)
-            #logger.info("update des Powercount")
+    else:
+        pass
     
-                
-            #write informaiton to DB
-            dbcom.WriteToDatabase(sqlleistung, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-            #logger.info("write to DB")
-        else:
-            #logger.info("test[6] enthielt keine daten " + str(test[6]))
-            #logger.info(sql)
-            pass
+    #Genset in Operation
+    if data["statusword4"] & 0xC000 == 0xC000:
+        CHPStatus[0] = 0x01 #CHP in Operation
+        CHPStatus[1] = 0x00 #CHP Ready
+        CHPStatus[2] = 0x00 #CHP Warning
+        CHPStatus[3] = 0x00 #CHP Alarm
+        CHPStatus[4] = 0x00 #CHP Off
         
-    except:
-        logger.error("Unknown Failure in Powercounting ")
+    else:
+        pass
+    
+    #Genset has a Warning
+    if data["statusword3"] & 0x8000 == 0x8000:
+        CHPStatus[0] = 0x00 #CHP in Operation
+        CHPStatus[1] = 0x00 #CHP Ready
+        CHPStatus[2] = 0x01 #CHP Warning
+        CHPStatus[3] = 0x00 #CHP Alarm
+        CHPStatus[4] = 0x00 #CHP Off
         
-def DeviceTemplog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
-    """Devicelog function will insert the Temperatur data directly to the Database"""
+    else:
+        pass
+
+    #Genset has an Alarm
+    if data["statusword4"] & 0x0001 == 0x0001:
+        CHPStatus[0] = 0x00 #CHP in Operation
+        CHPStatus[1] = 0x00 #CHP Ready
+        CHPStatus[2] = 0x00 #CHP Warning
+        CHPStatus[3] = 0x01 #CHP Alarm
+        CHPStatus[4] = 0x00 #CHP Off
+        
+    else:
+        pass
+
+    #Actual CHP operation mode
+    if data["mode"] == 0x00:
+        CHPStatus[0] = 0x00 #CHP in Operation
+        CHPStatus[1] = 0x00 #CHP Ready
+        CHPStatus[2] = 0x00 #CHP Warning
+        CHPStatus[3] = 0x00 #CHP Alarm
+        CHPStatus[4] = 0x01 #CHP Off
+        
+    else:
+        pass
+
+
+    #Analyse Genset Mode
+    if data["mode"] == 0x00: #Genset in off mode
+        CHPdevstatusoff = 1
+        
+    elif data["mode"] == 0x01: #Genset in manual mode
+        CHPdevstatusman = 1
+        
+    elif data["mode"] == 0x03:#genset in auto mode
+        CHPdevstatusauto = 1    
+    
+    #Status of GBC
+    if data["statusword4"] & 0x0001 == 0x0001:
+        GCBstatus = 0x01 # GCB Status is closed
+    else:
+        GCBstatus = 0x00 # GCB Status is open
+        
+    
+    if data["statusword4"] & 0x0002 == 0x0002:
+        MCBstatus = 0x01 # GCB Status is closed
+    else:
+        MCBstatus = 0x00 # GCB Status is open
+        
     
     try:
         
-        #Zeitstempel Aktuelle Zeit
+        #Actual timestamp
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')        
             
-        sqlleistung = """INSERT INTO supervision_chptemperature (CHPIDGEO, CHPwastgaspri, CHPwastgassec, 
-        CHPTempHV, CHPTempRV, CHPboilertemp, CHPRoomtemp, CHPAWT, CHPMotorIN, CHPMotorOUT, CHPReginsertfrom, 
-        CHPDReginserttime) VALUE ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', 
-        '{11}')""".format(data["deviceid"], data["wastgastemppri"], data["wastgastempsec"], data["hcltemp"], data["hcctemp"], 0, data["roomtemp"], 
-                          data["exhaustgastemp"], data["motorintemp"], data["motorouttemp"], data["deviceid"],timestamp)
-        #logger.info("update des Powercount")
+        sqlchpdatalog = """INSERT INTO supervision_chptemperature (deviceid, hcltemp, hcctemp, 
+        boilertoptemp, boilermidtemp, boilerbuttemp, coolingtemp, motorintemp, motorouttemp, wastgastemppri, wastgastempsec, 
+        oiltemp, oilpressure, exhaustgastemp, voltagel1, voltagel2, voltagel3, voltage12, voltage23, voltage31, currentl1, currentl2, currentl3, startcounter, unsuccesstartcounter,
+        runhours, khwcount, kvarcount, stateerror, statewarning, staterunning, statestop, modeauto, modeman, modestop, gcbstate, mcbstate, modepowerderate, inserttime) VALUE ('{0}',
+        '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', '{19}', '{20}',
+        '{21}', '{22}', '{23}', '{24}', '{25}', '{26}', '{27}', '{28}', '{29}', '{30}', '{31}', '{32}', '{33}', '{34}', '{35}', '{36}', '{37}', '{38}'
+        )""".format(data["deviceid"], data["hcltemp"], data["hcctemp"], 0, 0, 0, data["coolingtemp"], data["motorintemp"], data["motorouttemp"], data["wastgastemppri"], data["wastgastempsec"],
+                    data["oiltemp"], data["oilpressure"], data["exhaustgastemp"], data["voltagel1"], data["voltagel2"], data["voltagel3"], data["voltage12"], data["voltage23"], data["voltage31"],
+                    data["currentl1"], data["currentl2"], data["currentl3"], data["startcounter"], data["unsuccesstartcounter"], data["runhours"], data["khwcount"], data["kvarcount"],
+                    CHPStatus[3], CHPStatus[2], CHPStatus[0], CHPStatus[4], CHPdevstatusauto, CHPdevstatusman, CHPdevstatusoff, GCBstatus,
+                    MCBstatus, 0,timestamp)
         
                 
         #write informaiton to DB
-        dbcom.WriteToDatabase(sqlleistung, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-        #logger.info("write to DB")
+        dbcom.WriteToDatabase(sqlchpdatalog, dbhost, dbport, dbuser, dbpassword, dbdatabase)
         
     except:
-        logger.error("Unknown Failure in DeviceTemplog ")     
-    
-def DeviceStartsLog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
-    #hier weiter
-    """Devicelog function will insert the Starts data directly to the Database"""
-    
-    try:
+        logger.error("Unknown Failure in chpdatalog ")     
         
-        #Zerlegen des Statusbyte und vorbereitung fuer SQL
-        CHPStatus = bytearray(1)
-        #Genset in Operation
-        if data["statusword4"] & 0xC000 == 0xC000:
-            CHPStatus[0] = 0x01 #CHP in Operation
-         
-        else:
-            CHPStatus[0] = 0x00 #CHP in Operation
-            pass        
-        
-        #Zeitstempel Aktuelle Zeit
-        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')        
-            
-        sqlleistung = """INSERT INTO supervision_chprps (CHPIDGEO, CHPStartcounter, CHPbetriebsstunden, 
-        CHPInoperation, CHPCMDinserttime) VALUE ('{0}', '{1}', '{2}', '{3}', 
-        '{4}')""".format(data["deviceid"], data["startcounter"], data["runhours"], CHPStatus[0], timestamp)
-        #logger.info("update des Counter")
-        
-                
-        #write informaiton to DB
-        dbcom.WriteToDatabase(sqlleistung, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-        #logger.info("write to DB")
-        
-    except:
-        logger.error("Unknown Failure in DeviceTemplog ")     
 
 def DeviceStateLog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
-    #hier weiter
-    """Devicelog function will insert the Starts data directly to the Database"""
+
+    """DeviceStateLog function will insert the status from every device separate to the database.
+    
+    :param data: The dict contains the complete CHP data from CHP
+    :type data: dict
+    
+    :param dbhost: IP-Address or domain fromt the Server
+    :type dbhost: string
+    
+    :param dbhost: IP-Address or domain fromt the Database Server
+    :type dbhost: string
+    
+    :param dbuser: Database username
+    :type dbuser: string
+    
+    :param dbpassword: Database user password
+    :type dbpassword: string
+    
+    :param dbdatabase: Databasename
+    :type dbdatabase: string
+    
+    :returns: Nothing
+    :rtype: Nothing
+    
+    """  
     
     try:
            
-        #Zeitstempel Aktuelle Zeit
+        #Actual timestamp
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         Tempvalue = '0'
             
-        sqlleistung = """INSERT INTO supervision_chpstatus (CHPIDGEO, CHPstate1, CHPstate2, 
-        CHPstate3, CHPstate4, CHPstate5, CHPstate6, CHPstate7, CHPstate8, CHPstate9, CHPstate10, CHPReginsertfrom, CHPDReginserttime) VALUE ('{0}', '{1}', '{2}', '{3}', 
+        sqlleistung = """INSERT INTO supervision_devicestateLog (deviceid, state1, state2, 
+        state3, state4, state5, state6, state7, state8, state9, state10, insertby, inserttime) VALUE ('{0}', '{1}', '{2}', '{3}', 
         '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}')""".format(data["deviceid"], data["statusword1"], data["statusword2"], data["statusword3"], data["statusword4"], data["statusword5"], data["statusword6"], data["statusword7"], Tempvalue, Tempvalue, Tempvalue, data["deviceid"], timestamp)
         #logger.info("update des Counter")
         

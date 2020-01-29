@@ -88,23 +88,23 @@ def getErrorText(data,dbhost,dbport,dbuser,dbpassword,dbdatabase,emailsender,ema
     else:
         pass #Weiterleitung im Programm, keine fehler im Genset
     
-    if funcswitchID == 2 or funcswitchID == 1:
-        try:
-            #-----------
-            #Update Warnung
-            sqlBHKWerror = """UPDATE supervision_chpgeodata SET CHPIDGEO = '{0}', CHPLastUpdate = '{1}', CHPAlarm1 = '{2}', CHPAlarm2 = '{3}', CHPAlarm3 = '{4}', CHPAlarm4 = '{5}', CHPAlarm5 = '{6}', CHPAlarm6 = '{7}', CHPAlarm7 = '{8}', CHPAlarm8 = '{9}', CHPAlarm9 = '{10}',CHPAlarm10 = '{11}', CHPAlarm11 = '{12}', CHPAlarm12 = '{13}', CHPAlarm13 = '{14}', CHPAlarm14 = '{15}', CHPAlarm15 = '{16}', CHPAlarm16 = '{17}' WHERE CHPIDGEO = '{0}'""".format(deviceID, timestamp, genalarm1, genalarm2, genalarm3, genalarm4, genalarm5, genalarm6, genalarm7, genalarm8, genalarm9, genalarm10, genalarm11, genalarm12, genalarm13, genalarm14, genalarm15, genalarm16)
+    #if funcswitchID == 2 or funcswitchID == 1:
+        #try:
+            ##-----------
+            ##Update Warnung
+            #sqlBHKWerror = """UPDATE supervision_chpgeodata SET deviceid = '{0}', alarmtime = '{1}', alarm1 = '{2}', alarm2 = '{3}', alarm3 = '{4}', alarm4 = '{5}', alarm5 = '{6}', CHPAlarm6 = '{7}' WHERE deviceid = '{0}'""".format(deviceID, timestamp, genalarm1, genalarm2, genalarm3, genalarm4, genalarm5)
     
-            #write informaiton to DB
-            dbcom.WriteToDatabase(sqlBHKWerror, dbhost, dbport, dbuser, dbpassword, dbdatabase)    
+            ##write informaiton to DB
+            #dbcom.WriteToDatabase(sqlBHKWerror, dbhost, dbport, dbuser, dbpassword, dbdatabase)    
 
-        except Exception as e:
-            logger.error(str(e))
+        #except Exception as e:
+            #logger.error(str(e))
     
     if funcswitchID == 2:
         try:
             #-----------
             #Write Errorlog to Database
-            sqlerrorlog = """INSERT INTO supervision_chperrorlog (CHPnumber, CHPAlarmtime, CHPAlarm1, CHPAlarm2, CHPAlarm3, CHPAlarm4, CHPAlarm5, CHPAlarm6, CHPAlarm7, CHPAlarm8, CHPAlarm9, CHPAlarm10, CHPAlarm11, CHPAlarm12, CHPAlarm13, CHPAlarm14, CHPAlarm15, CHPAlarm16, CHPAlarmInfo) VALUE ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}','{18}')""".format(deviceID, timestamp, genalarm1, genalarm2, genalarm3, genalarm4, genalarm5, genalarm6, genalarm7, genalarm8, genalarm9, genalarm10, genalarm11, genalarm12, genalarm13, genalarm14, genalarm15, genalarm16,genalarm1)
+            sqlerrorlog = """INSERT INTO supervision_errorlog (deviceid, alarmtime, alarm1, alarm2, alarm3, alarm4, alarm5, alarmInfo) VALUE ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}')""".format(deviceID, timestamp, genalarm1, genalarm2, genalarm3, genalarm4, genalarm5, genalarm1)
 
             #write informaiton to DB
             dbcom.WriteToDatabase(sqlerrorlog, dbhost, dbport, dbuser, dbpassword, dbdatabase)

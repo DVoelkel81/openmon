@@ -43,6 +43,31 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+    """WriteToDatabase is a global function to write data to SQL database, 
+    so that the SQL creation code not must insert in every required function..
+    
+    :param WTDstatement: The dict contains the complete CHP data from CHP
+    :type WTDstatement: string
+    
+    :param dbhost: IP-Address or domain fromt the Server
+    :type dbhost: string
+    
+    :param dbhost: IP-Address or domain fromt the Database Server
+    :type dbhost: string
+    
+    :param dbuser: Database username
+    :type dbuser: string
+    
+    :param dbpassword: Database user password
+    :type dbpassword: string
+    
+    :param dbdatabase: Databasename
+    :type dbdatabase: string
+    
+    :returns: Nothing
+    :rtype: Nothing
+    
+    """    
     
     #Create SQL DB Connection
     #Postgres
@@ -54,8 +79,7 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     #logger.info(WTDstatement)
 
     #MySQL
-    
-    db = pymysql.connect(host=dbhost,port=int(dbport),user=dbuser,passwd=dbpassword,db=dbdatabase)
+    #db = pymysql.connect(host=dbhost,port=int(dbport),user=dbuser,passwd=dbpassword,db=dbdatabase)
       
         
 

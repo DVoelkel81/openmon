@@ -138,13 +138,14 @@ def modbusreadclient():
                 #Remeber the correct Com Port if you receive an IO Error
                 stdreg = modbusconn.execute(myread[5], cst.READ_HOLDING_REGISTERS, myread[1], quantity_of_x=myread[3])
                 data[myread[6]] = stdreg[0]
+                logger.info(myread[1])
                 stdreg = None
                 
                 
 
             elif myread[3] == 2:
                 kwh = modbusconn.execute(myread[5], cst.READ_HOLDING_REGISTERS, myread[1], quantity_of_x=myread[3])
-                
+                logger.info(myread[1])
                 mysum = (65536*kwh[0])+kwh[1]
                 
                 uint32 = (65535*65536)+65535
@@ -182,6 +183,7 @@ def modbusreadclient():
             #Read Alarm messages if alarms exists
             if myread[3] == 25:
                 Alarm = modbusconn.execute(myread[5], cst.READ_HOLDING_REGISTERS, myread[1], quantity_of_x=myread[3])
+                logger.info(myread[1])
                 Alarmmail = []
                 for Al in range(0,25,1):
                     #Alarmval = Alarm[Al]
@@ -286,6 +288,7 @@ def modbusreadclient():
         else:
             #SQL Request error exist
             try:
+
                 if not data["statusword4"] & 0x0001:
                     SQL_Command = """UPDATE devicestatus SET aktalarm = '0' WHERE id = '1'"""
                     cursor.execute(SQL_Command)
@@ -302,7 +305,8 @@ def modbusreadclient():
                 logger.info("Fehler in der SQLITE Kommunikation aufgetreten, ErrorID konnte nicht auf 0 gesetzt werden." + str(e))            
             
             #udpsocket.sendto(data,("localhost",7777))
-            
+        
+        logger.info("vor xml")    
         xmlrpcomclient.sendchp(data,databaseserver,databaseport)
         """
         Transfer Data to XML-RPC Client Script

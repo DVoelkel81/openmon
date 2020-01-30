@@ -160,7 +160,7 @@ def chpdatalog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         #Actual timestamp
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')        
             
-        sqlchpdatalog = """INSERT INTO supervision_chptemperature (deviceid, hcltemp, hcctemp, 
+        sqlchpdatalog = """INSERT INTO supervision_chpdata (deviceid, hcltemp, hcctemp, 
         boilertoptemp, boilermidtemp, boilerbuttemp, coolingtemp, motorintemp, motorouttemp, wastgastemppri, wastgastempsec, 
         oiltemp, oilpressure, exhaustgastemp, voltagel1, voltagel2, voltagel3, voltage12, voltage23, voltage31, currentl1, currentl2, currentl3, startcounter, unsuccesstartcounter,
         runhours, khwcount, kvarcount, stateerror, statewarning, staterunning, statestop, modeauto, modeman, modestop, gcbstate, mcbstate, modepowerderate, inserttime) VALUE ('{0}',

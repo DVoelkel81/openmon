@@ -21,6 +21,8 @@ import logging
 import sys
 import os
 import threading
+import xml.dom.minidom as md
+
 from socketserver import ThreadingMixIn
 from xmlrpc.server import SimpleXMLRPCServer
 from xmlrpc.server import SimpleXMLRPCRequestHandler
@@ -34,10 +36,20 @@ import dataanalysis
 """
 Import project functions
 """
+#create logging folder
+#logdirectory = os.path.dirname(os.path.abspath(__file__)) + "\\log" #Windows
+logdirectory = os.path.dirname(os.path.abspath(__file__)) + "/log" #Linux
 
+#check if folder exists
+if not os.path.exists(logdirectory):
+    os.makedirs(logdirectory)
+
+
+# create logger
+logPath = os.path.dirname(os.path.abspath(__file__)) + "/log/xmlRPCServer.log" #LINUX
 
 #logPath = "/var/log/xml-rpc-omserver.log" #linux
-logPath = "c:\\temp\\xml-rpc-omserver.log" #Mac
+#logPath = "c:\\temp\\xml-rpc-omserver.log" #Mac
 logger = logging.getLogger("xml-rpc-omserver")
 logger.setLevel(logging.DEBUG)
 handler = RotatingFileHandler(logPath, maxBytes=4096000, backupCount=5)
@@ -61,18 +73,29 @@ class LoggingSimpleXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
         try:
             timestr = time.strftime("%Y%m%d-%H%M%S")
             # Filename to write
-            filenameget = "c:\\temp\\xml-rpc-receive-" + timestr + ".xml"
-            filenamesend = "c:\\temp\\xml-rpc-answere-" + timestr + ".xml"
-                       
+            filenameget = "xml-rpc-receive-" + timestr + ".xml"
+            filenamesend = "xml-rpc-answere-" + timestr + ".xml"
+            logger.info("after filename")
             
             # get arguments
             data = self.rfile.read(int(self.headers["content-length"]))
-            
+            logger.info("befor parse")
+            reparsed = md.parseString(data)
+            dataxmlformated = '\n'.join([line for line in reparsed.toprettyxml(indent=' '*2).split('\n') if line.strip()])
+            #dom = md.parseString(data) # or xml.dom.minidom.parseString(xml_string)
+            logger.info("after parse")
+            #dataxmlformated = dom.toprettyxml()
+            logger.info("After write to variable")
+
+
+
+            logger.info("after xml parse")
+
             # Open the file with writing permission
             myfileget = open(filenameget, 'w')
             
             # Write a line to the file
-            myfileget.write('%s' % data)
+            myfileget.write('%s' % dataxmlformated)
             
             # Close the file
             myfileget.close()             
@@ -145,7 +168,7 @@ def logchp(chpdict):
 
 
 # run server
-def run_server(host="localhost", port=8000):
+def run_server(host="134.255.244.24", port=8000):
     server_addr = (host, port)
     server = SimpleThreadedXMLRPCServer(server_addr,LoggingSimpleXMLRPCRequestHandler)
     remotemethod = REMOTEMETHODS()

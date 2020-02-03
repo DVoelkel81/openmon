@@ -2,17 +2,17 @@
 <root>
   <DBServer name="Datenbank Server">
     <servertyp>postgres</servertyp>
-    <host>134.255.244.24</host>
-    <port>3306</port>
-    <user>djangotest</user>
-    <password>H3B3sAl2</password>
+    <host>localhost</host>
+    <port>5432</port>
+    <user>xxxx</user>
+    <password>xxxx</password>
     <database>test1</database>
   </DBServer>
   <EmailServer name="E-Mail Server">
-    <sender>stoerung@tuxhornbhkw.de</sender>
-    <smtpserver>mail.tuxhornbhkw.de</smtpserver>
-    <smtpusername>stoerung@tuxhornbhkw.de</smtpusername>
-    <smtppassword>68nq5shgaTeujwnK</smtppassword>
+    <sender>stoerung@xxxx.de</sender>
+    <smtpserver>mail.xxxx.de</smtpserver>
+    <smtpusername>stoerung@xxxx.de</smtpusername>
+    <smtppassword>xxxx</smtppassword>
     <smtpport>587</smtpport>
   </EmailServer>
 </root> 

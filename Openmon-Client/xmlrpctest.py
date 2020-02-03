@@ -32,7 +32,7 @@ def xmltest():
     
     myvalues = {}
 
-    myvalues["deviceid"] = 1719
+    myvalues["deviceid_id"] = "5668c90a-80ed-4b7b-a467-f4d9789982fb"
     myvalues["statusword1"]= 0
     myvalues["statusword2"]= 0
     myvalues["statusword3"]= 0
@@ -85,6 +85,7 @@ def xmltest():
     myvalues["currentl3"]= 0
     myvalues["roomtemp"]= 0
     myvalues["coolingtemp"]= 0
+    myvalues["oilpressure"] = 0
     
     
     databaseserver = "134.255.244.24"

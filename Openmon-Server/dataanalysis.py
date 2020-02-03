@@ -37,16 +37,16 @@ import DeviceLogging
 
 #create logging folder
 #logdirectory = os.path.dirname(os.path.abspath(__file__)) + "\\log" #Windows
-#logdirectory = os.path.dirname(os.path.abspath(__file__)) + "/log" #Linux
+logdirectory = os.path.dirname(os.path.abspath(__file__)) + "/log" #Linux
 
 #check if folder exists
-#if not os.path.exists(logdirectory):
-    #os.makedirs(logdirectory)
+if not os.path.exists(logdirectory):
+    os.makedirs(logdirectory)
 
 
 # create logger
-logPath = "c:\\temp\\xml-rpc-omserver.log"
-#logPath = os.path.dirname(os.path.abspath(__file__)) + "/log/dataanalysis.log" #LINUX
+#logPath = "c:\\temp\\xml-rpc-omserver.log"
+logPath = os.path.dirname(os.path.abspath(__file__)) + "/log/dataanalysis.log" #LINUX
 #logPath = os.path.dirname(os.path.abspath(__file__)) + "\\log\\analysis.log" #Windows
 logger = logging.getLogger("dataanalysis")
 logger.setLevel(logging.DEBUG)
@@ -84,8 +84,11 @@ try:
         #logger.info(emailsmtppassword)
         emailsmtpport =EmailServer.find('smtpport').text #smtp Port selection
         #logger.info(emailsmtpport)
-except:
+except Exception as e:
     logger.error("Could not open dbconfig.xml or parse the values")
+    logger.info(type(e))
+    logger.info(e.args)
+    logger.info(e)    
 
 
 #Function for Dataanalysis
@@ -136,7 +139,7 @@ def socketanalysis(data):
         #DataArray.append(256*data[76] + data[77]) #Motoroutgoing test 27 
         #logger.info(len(data))   
     
-    if Data["Alarmtext1"]:
+    if data["Alarmtext1"]:
             
         #Read COmap Errortext
         ComAp_Errortext.getErrorText(data,dbhost,dbport,dbuser,dbpassword,dbdatabase,emailsender,emailsmtpserver,emailsmtpusername,emailsmtppassword,emailsmtpport)
@@ -147,13 +150,19 @@ def socketanalysis(data):
          
     try:
         #Insert the processdata from CHP into the Database
-        DeviceLogging.chpdatalog(DataArray, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-    except:
+        DeviceLogging.chpdatalog(data, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+    except Exception as e:
         logger.error("Error loading function chpdatalog")
+        logger.info(type(e))
+        logger.info(e.args)
+        logger.info(e)         
         
     
     try:
         #Insert the Processdata into the Database
-        DeviceLogging.DeviceStateLog(DataArray, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-    except:
-        logger.error("Error loading function DeviceStateLog")    
+        DeviceLogging.DeviceStateLog(data, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+    except Exception as e:
+        logger.error("Error loading function DeviceStateLog")
+        logger.info(type(e))
+        logger.info(e.args)
+        logger.info(e)         

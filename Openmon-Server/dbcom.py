@@ -17,7 +17,6 @@ __status__ = "Develop"
 import sys
 import logging
 import os
-#import pymysql
 import psycopg2
 import datetime
 from logging.handlers import RotatingFileHandler
@@ -97,21 +96,24 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         db.rollback()
         logger.info(e.pgerror)
         logger.info("InterfaceError")
-        logger.info(sql)
+        logger.info(e)
+        logger.info(WTDstatement)
 
     except psycopg2.DatabaseError as e:
     #except pymysql.err.DataError as e:
         db.rollback()
         logger.info(e.pgerror)
         logger.info("InterfaceError")
-        logger.info(sql)
+        logger.info(e)
+        logger.info(WTDstatement)
 
     except psycopg2.DataError as e:
     #except pymysql.err.DataError as e:
         db.rollback()
         logger.info(e.pgerror)
         logger.info("Data Error")
-        logger.info(sql)
+        logger.info(e)
+        logger.info(WTDstatement)
         
     except psycopg2.InternalError as e:
     #except pymysql.err.InternalError as e:
@@ -119,6 +121,7 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         # print ("MySQL Error [%d]: %s" % (e.args[0], e.args[1]))
         logger.info(e.pgerror)
         logger.info("Internal Error")
+        logger.info(e)
         # hier funktioniert die Error Funktion noch nicht.
 
     except psycopg2.IntegrityError as e:
@@ -126,30 +129,35 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         db.rollback()
         logger.info(e.pgerror)
         logger.info("integrity Error")
+        logger.info(e)
 
     except psycopg2.OperationalError as e:
     #except pymysql.err.OperationalError as e:
         db.rollback()
         logger.info(e.pgerror)
         logger.info("Operation Error")
+        logger.info(e)
 
     except psycopg2.NotSupportedError as e:
     #except pymysql.err.NotSupportedError as e:
         db.rollback()
         logger.info(e.pgerror)
         logger.info("NoSupport Error")
+        logger.info(e)
 
     except psycopg2.ProgrammingError as e:
     #except pymysql.err.ProgrammingError as e:
         db.rollback()
         logger.info(e.pgerror)
         logger.info("Programming Error")
+        logger.info(e)
 
     except psycopg2.Error as e:
     #except pymysql.err.Error as e:
         db.rollback()
         logger.info(e.pgerror)
         logger.info("unknown Error")
+        logger.info(e)
 
 ########################################
 # main function                        #

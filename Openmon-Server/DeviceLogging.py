@@ -19,6 +19,7 @@ import logging
 import os
 import datetime
 import dbcom
+import uuid
 from time import *
 from logging.handlers import RotatingFileHandler
 
@@ -40,7 +41,6 @@ logger.setLevel(logging.DEBUG)
 handler = RotatingFileHandler(logPath, maxBytes=4096000, backupCount=5)
 formatter = logging.Formatter('%(asctime)s - %(threadName)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
-#logger.addHandler(stream_handler)
 logger.addHandler(handler)
 
 
@@ -72,101 +72,115 @@ def chpdatalog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     :rtype: Nothing
     
     """    
-    
-    #decode Statuswords for SQL entry
-    CHPStatus = bytearray(5)
+    try:
+        
+        #decode Statuswords for SQL entry
+        CHPStatus = bytearray(5)
 
-    #Genset is Ready
-    if ((data["mode"] == 0x01) or (data["mode"] == 0x02) or (data["mode"] == 0x03)) and not(data["statusword4"] & 0x0001 == 0x0001):
-        CHPStatus[0] = 0x00 #CHP in Operation
-        CHPStatus[1] = 0x01 #CHP Ready
-        CHPStatus[2] = 0x00 #CHP Warning
-        CHPStatus[3] = 0x00 #CHP Alarm
-        CHPStatus[4] = 0x00 #CHP Off
+        #Genset is Ready
+        if ((data["mode"] == 0x01) or (data["mode"] == 0x02) or (data["mode"] == 0x03)) and not(data["statusword4"] & 0x0001 == 0x0001):
+            CHPStatus[0] = 0x00 #CHP in Operation
+            CHPStatus[1] = 0x01 #CHP Ready
+            CHPStatus[2] = 0x00 #CHP Warning
+            CHPStatus[3] = 0x00 #CHP Alarm
+            CHPStatus[4] = 0x00 #CHP Off
         
-    else:
-        pass
+        else:
+            pass
     
-    #Genset in Operation
-    if data["statusword4"] & 0xC000 == 0xC000:
-        CHPStatus[0] = 0x01 #CHP in Operation
-        CHPStatus[1] = 0x00 #CHP Ready
-        CHPStatus[2] = 0x00 #CHP Warning
-        CHPStatus[3] = 0x00 #CHP Alarm
-        CHPStatus[4] = 0x00 #CHP Off
+        #Genset in Operation
+        if data["statusword4"] & 0xC000 == 0xC000:
+            CHPStatus[0] = 0x01 #CHP in Operation
+            CHPStatus[1] = 0x00 #CHP Ready
+            CHPStatus[2] = 0x00 #CHP Warning
+            CHPStatus[3] = 0x00 #CHP Alarm
+            CHPStatus[4] = 0x00 #CHP Off
         
-    else:
-        pass
+        else:
+            pass
     
-    #Genset has a Warning
-    if data["statusword3"] & 0x8000 == 0x8000:
-        CHPStatus[0] = 0x00 #CHP in Operation
-        CHPStatus[1] = 0x00 #CHP Ready
-        CHPStatus[2] = 0x01 #CHP Warning
-        CHPStatus[3] = 0x00 #CHP Alarm
-        CHPStatus[4] = 0x00 #CHP Off
+        #Genset has a Warning
+        if data["statusword3"] & 0x8000 == 0x8000:
+            CHPStatus[0] = 0x00 #CHP in Operation
+            CHPStatus[1] = 0x00 #CHP Ready
+            CHPStatus[2] = 0x01 #CHP Warning
+            CHPStatus[3] = 0x00 #CHP Alarm
+            CHPStatus[4] = 0x00 #CHP Off
         
-    else:
-        pass
+        else:
+            pass
 
-    #Genset has an Alarm
-    if data["statusword4"] & 0x0001 == 0x0001:
-        CHPStatus[0] = 0x00 #CHP in Operation
-        CHPStatus[1] = 0x00 #CHP Ready
-        CHPStatus[2] = 0x00 #CHP Warning
-        CHPStatus[3] = 0x01 #CHP Alarm
-        CHPStatus[4] = 0x00 #CHP Off
+        #Genset has an Alarm
+        if data["statusword4"] & 0x0001 == 0x0001:
+            CHPStatus[0] = 0x00 #CHP in Operation
+            CHPStatus[1] = 0x00 #CHP Ready
+            CHPStatus[2] = 0x00 #CHP Warning
+            CHPStatus[3] = 0x01 #CHP Alarm
+            CHPStatus[4] = 0x00 #CHP Off
         
-    else:
-        pass
+        else:
+            pass
 
-    #Actual CHP operation mode
-    if data["mode"] == 0x00:
-        CHPStatus[0] = 0x00 #CHP in Operation
-        CHPStatus[1] = 0x00 #CHP Ready
-        CHPStatus[2] = 0x00 #CHP Warning
-        CHPStatus[3] = 0x00 #CHP Alarm
-        CHPStatus[4] = 0x01 #CHP Off
-        
-    else:
-        pass
-
-
-    #Analyse Genset Mode
-    if data["mode"] == 0x00: #Genset in off mode
-        CHPdevstatusoff = 1
-        
-    elif data["mode"] == 0x01: #Genset in manual mode
-        CHPdevstatusman = 1
-        
-    elif data["mode"] == 0x03:#genset in auto mode
-        CHPdevstatusauto = 1    
+        #Actual CHP operation mode
+        if data["mode"] == 0x00:
+            CHPStatus[0] = 0x00 #CHP in Operation
+            CHPStatus[1] = 0x00 #CHP Ready
+            CHPStatus[2] = 0x00 #CHP Warning
+            CHPStatus[3] = 0x00 #CHP Alarm
+            CHPStatus[4] = 0x01 #CHP Off
+            
+        else:
+            pass
     
-    #Status of GBC
-    if data["statusword4"] & 0x0001 == 0x0001:
-        GCBstatus = 0x01 # GCB Status is closed
-    else:
-        GCBstatus = 0x00 # GCB Status is open
-        
     
-    if data["statusword4"] & 0x0002 == 0x0002:
-        MCBstatus = 0x01 # GCB Status is closed
-    else:
-        MCBstatus = 0x00 # GCB Status is open
+        #Analyse Genset Mode
+        if data["mode"] == 0x00: #Genset in off mode
+            CHPdevstatusoff = 1
+            CHPdevstatusman = 0
+            CHPdevstatusauto = 0
+            
+        elif data["mode"] == 0x01: #Genset in manual mode
+            CHPdevstatusoff = 0
+            CHPdevstatusman = 1
+            CHPdevstatusauto = 0
+            
+        elif data["mode"] == 0x03:#genset in auto mode
+            CHPdevstatusoff = 0
+            CHPdevstatusman = 0
+            CHPdevstatusauto = 1    
         
+        #Status of GBC
+        if data["statusword4"] & 0x0001 == 0x0001:
+            GCBstatus = 0x01 # GCB Status is closed
+        else:
+            GCBstatus = 0x00 # GCB Status is open
+            
+        
+        if data["statusword4"] & 0x0002 == 0x0002:
+            MCBstatus = 0x01 # GCB Status is closed
+        else:
+            MCBstatus = 0x00 # GCB Status is open
+        
+    except Exception as e:
+        logger.error("Error in Statusbit chpdatalog analysis ")
+        logger.info(type(e))
+        logger.info(e.args)
+        logger.info(e)
+        data = None         
     
     try:
         
         #Actual timestamp
-        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')        
+        timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        myuuid = str(uuid.uuid4())
             
-        sqlchpdatalog = """INSERT INTO supervision_chpdata (deviceid, hcltemp, hcctemp, 
+        chpdatalogsql = """INSERT INTO supervision_chpdata  (id, deviceid_id, hcltemp, hcctemp, 
         boilertoptemp, boilermidtemp, boilerbuttemp, coolingtemp, motorintemp, motorouttemp, wastgastemppri, wastgastempsec, 
         oiltemp, oilpressure, exhaustgastemp, voltagel1, voltagel2, voltagel3, voltage12, voltage23, voltage31, currentl1, currentl2, currentl3, startcounter, unsuccesstartcounter,
-        runhours, khwcount, kvarcount, stateerror, statewarning, staterunning, statestop, modeauto, modeman, modestop, gcbstate, mcbstate, modepowerderate, inserttime) VALUE ('{0}',
+        runhours, khwcount, kvarcount, stateerror, statewarning, staterunning, statestop, modeauto, modeman, modestop, gcbstate, mcbstate, modepowerderate, inserttime) VALUES ('{0}',
         '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}', '{13}', '{14}', '{15}', '{16}', '{17}', '{18}', '{19}', '{20}',
-        '{21}', '{22}', '{23}', '{24}', '{25}', '{26}', '{27}', '{28}', '{29}', '{30}', '{31}', '{32}', '{33}', '{34}', '{35}', '{36}', '{37}', '{38}'
-        )""".format(data["deviceid"], data["hcltemp"], data["hcctemp"], 0, 0, 0, data["coolingtemp"], data["motorintemp"], data["motorouttemp"], data["wastgastemppri"], data["wastgastempsec"],
+        '{21}', '{22}', '{23}', '{24}', '{25}', '{26}', '{27}', '{28}', '{29}', '{30}', '{31}', '{32}', '{33}', '{34}', '{35}', '{36}', '{37}', '{38}', '{39}'
+        )""".format(myuuid, data["deviceid_id"], data["hcltemp"], data["hcctemp"], 0, 0, 0, data["coolingtemp"], data["motorintemp"], data["motorouttemp"], data["wastgastemppri"], data["wastgastempsec"],
                     data["oiltemp"], data["oilpressure"], data["exhaustgastemp"], data["voltagel1"], data["voltagel2"], data["voltagel3"], data["voltage12"], data["voltage23"], data["voltage31"],
                     data["currentl1"], data["currentl2"], data["currentl3"], data["startcounter"], data["unsuccesstartcounter"], data["runhours"], data["khwcount"], data["kvarcount"],
                     CHPStatus[3], CHPStatus[2], CHPStatus[0], CHPStatus[4], CHPdevstatusauto, CHPdevstatusman, CHPdevstatusoff, GCBstatus,
@@ -174,10 +188,14 @@ def chpdatalog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         
                 
         #write informaiton to DB
-        dbcom.WriteToDatabase(sqlchpdatalog, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+        dbcom.WriteToDatabase(chpdatalogsql, dbhost, dbport, dbuser, dbpassword, dbdatabase)
         
-    except:
-        logger.error("Unknown Failure in chpdatalog ")     
+    except Exception as e:
+        logger.error("Error in SQL Transmitsion chpdatalog")
+        logger.info(type(e))
+        logger.info(e.args)
+        logger.info(e)
+        data = None        
         
 
 def DeviceStateLog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
@@ -214,18 +232,21 @@ def DeviceStateLog(data,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         
         Tempvalue = '0'
             
-        sqlleistung = """INSERT INTO supervision_devicestateLog (deviceid, state1, state2, 
-        state3, state4, state5, state6, state7, state8, state9, state10, insertby, inserttime) VALUE ('{0}', '{1}', '{2}', '{3}', 
-        '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}')""".format(data["deviceid"], data["statusword1"], data["statusword2"], data["statusword3"], data["statusword4"], data["statusword5"], data["statusword6"], data["statusword7"], Tempvalue, Tempvalue, Tempvalue, data["deviceid"], timestamp)
-        #logger.info("update des Counter")
+        leistungsql = """INSERT INTO supervision_devicestateLog (deviceid_id, state1, state2, 
+        state3, state4, state5, state6, state7, state8, state9, state10, insertby, inserttime) VALUES ('{0}', '{1}', '{2}', '{3}', 
+        '{4}', '{5}', '{6}', '{7}', '{8}', '{9}', '{10}', '{11}', '{12}')""".format(data["deviceid_id"], data["statusword1"], data["statusword2"], data["statusword3"], data["statusword4"], data["statusword5"], data["statusword6"], data["statusword7"], Tempvalue, Tempvalue, Tempvalue, data["deviceid_id"], timestamp)
+
         
                 
         #write informaiton to DB
-        dbcom.WriteToDatabase(sqlleistung, dbhost, dbport, dbuser, dbpassword, dbdatabase)
-        #logger.info("write to DB")
+        #dbcom.WriteToDatabase(leistungsql, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+
         
-    except:
-        logger.error("Unknown Failure in DeviceStatuslog ") 
+    except Exception as e:
+        logger.error("Error in SQL Transmitsion DeviceStateLog") 
+        logger.info(type(e))
+        logger.info(e.args)
+        logger.info(e)        
     
 
 ########################################

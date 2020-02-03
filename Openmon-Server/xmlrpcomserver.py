@@ -75,21 +75,11 @@ class LoggingSimpleXMLRPCRequestHandler(SimpleXMLRPCRequestHandler):
             # Filename to write
             filenameget = "xml-rpc-receive-" + timestr + ".xml"
             filenamesend = "xml-rpc-answere-" + timestr + ".xml"
-            logger.info("after filename")
             
             # get arguments
             data = self.rfile.read(int(self.headers["content-length"]))
-            logger.info("befor parse")
             reparsed = md.parseString(data)
             dataxmlformated = '\n'.join([line for line in reparsed.toprettyxml(indent=' '*2).split('\n') if line.strip()])
-            #dom = md.parseString(data) # or xml.dom.minidom.parseString(xml_string)
-            logger.info("after parse")
-            #dataxmlformated = dom.toprettyxml()
-            logger.info("After write to variable")
-
-
-
-            logger.info("after xml parse")
 
             # Open the file with writing permission
             myfileget = open(filenameget, 'w')
@@ -148,7 +138,7 @@ def logchp(chpdict):
     
     try:
 
-        data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
+        #data, addr = sock.recvfrom(1024) # buffer size is 1024 bytes
         #logger.info(len(data))
         t = threading.Thread(name='dataanalysis', target=dataanalysis.socketanalysis, args=(chpdict,))
         t.setDaemon(True)
@@ -156,8 +146,12 @@ def logchp(chpdict):
         data = None
 
        
-    except:
+    except Exception as e:
+        
         logger.info('Error in Array or analysis function!')
+        logger.info(type(e))
+        logger.info(e.args)
+        logger.info(e)
         data = None
         pass    
     

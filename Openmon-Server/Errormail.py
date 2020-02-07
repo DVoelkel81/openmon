@@ -48,20 +48,25 @@ logger.addHandler(handler)
 # declaration of default mail settings #
 ########################################
 # mail address of the sender
-sender = 'stoerung@tuxhornbhkw.de'
+#sender = 'xxx@xxx.xx'
+sender = 'xxx@xxx.xxx'
 
-# fqdn of the mail server
-#smtpserver = 'pro.eu.turbo-smtp.com'
-smtpserver = 'mail.tuxhornbhkw.de'
+## fqdn of the mail server
 
-# username for the SMTP authentication
-smtpusername = 'stoerung@tuxhornbhkw.de'
+#smtpserver = 'xxx.xxxx.xxx'
+smtpserver = 'xxx.xxxx.xxxx'
 
-# password for the SMTP authentication
-smtppassword = '68nq5shgaTeujwnK'
+## username for the SMTP authentication
+#smtpusername = 'xxxx@xxxx.xxxx'
+smtpusername = 'xxxx'
 
-#smtp Port selection
+## password for the SMTP authentication
+#smtppassword = 'xxxxx'
+smtppassword = 'xxxxx'
 smtpport = '587'
+
+##smtp Port selection
+#smtpport = '587'
 
 # use TLS encryption for the connection
 usetls = True
@@ -107,8 +112,8 @@ def sendmail(server,user,password,port,recipient,subject,content):
 def main():
 
     # call sendmail() and generate a new mail with specified subject and content
-    #sendmail(smtpserver,smtpusername,smtppassword,'25','dennis.voelkel@outlook.com','Service Fault','service error on chp')
-    sendmail(smtpserver,smtpusername,smtppassword,smtpport,'dennis.voelkel@gmail.com','Service Fault Test 2','Service Testfehler fuer Mail system')
+
+    sendmail(smtpserver,smtpusername,smtppassword,smtpport,'dennis.voelkel@outlook.de','Service Fault Test 2','Service Testfehler fuer Mail system')
     # quit python script
     sys.exit(0)
     

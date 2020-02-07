@@ -5,7 +5,7 @@ __author__ = "Dennis Voelkel"
 __copyright__ = "Copyright 2019, Openmon"
 __credits__ = ["Dennis Voelkel"]
 __license__ = "MIT"  #
-__version__ = "0.0.1"
+__version__ = "0.0.2"
 __maintainer__ = "Dennis Voelkel"
 __email__ = "dennis.voelkel@outlook.com"
 __status__ = "Develop"
@@ -41,7 +41,7 @@ handler.setFormatter(formatter)
 #logger.addHandler(stream_handler)
 logger.addHandler(handler)
 
-def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
+def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase,fromfunction):
     """WriteToDatabase is a global function to write data to SQL database, 
     so that the SQL creation code not must insert in every required function..
     
@@ -61,6 +61,9 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
     :type dbpassword: string
     
     :param dbdatabase: Databasename
+    :type dbdatabase: string
+    
+    :param dbdatabase: fromfunction
     :type dbdatabase: string
     
     :returns: Nothing
@@ -98,14 +101,17 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         logger.info("InterfaceError")
         logger.info(e)
         logger.info(WTDstatement)
+        logger.info(fromfunction)
+        
 
     except psycopg2.DatabaseError as e:
     #except pymysql.err.DataError as e:
         db.rollback()
         logger.info(e.pgerror)
-        logger.info("InterfaceError")
+        logger.info("DatabaseError")
         logger.info(e)
         logger.info(WTDstatement)
+        logger.info(fromfunction)
 
     except psycopg2.DataError as e:
     #except pymysql.err.DataError as e:
@@ -114,6 +120,7 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         logger.info("Data Error")
         logger.info(e)
         logger.info(WTDstatement)
+        logger.info(fromfunction)
         
     except psycopg2.InternalError as e:
     #except pymysql.err.InternalError as e:
@@ -122,6 +129,7 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         logger.info(e.pgerror)
         logger.info("Internal Error")
         logger.info(e)
+        logger.info(fromfunction)
         # hier funktioniert die Error Funktion noch nicht.
 
     except psycopg2.IntegrityError as e:
@@ -130,6 +138,7 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         logger.info(e.pgerror)
         logger.info("integrity Error")
         logger.info(e)
+        logger.info(fromfunction)
 
     except psycopg2.OperationalError as e:
     #except pymysql.err.OperationalError as e:
@@ -137,6 +146,7 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         logger.info(e.pgerror)
         logger.info("Operation Error")
         logger.info(e)
+        logger.info(fromfunction)
 
     except psycopg2.NotSupportedError as e:
     #except pymysql.err.NotSupportedError as e:
@@ -144,6 +154,7 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         logger.info(e.pgerror)
         logger.info("NoSupport Error")
         logger.info(e)
+        logger.info(fromfunction)
 
     except psycopg2.ProgrammingError as e:
     #except pymysql.err.ProgrammingError as e:
@@ -151,6 +162,7 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         logger.info(e.pgerror)
         logger.info("Programming Error")
         logger.info(e)
+        logger.info(fromfunction)
 
     except psycopg2.Error as e:
     #except pymysql.err.Error as e:
@@ -158,6 +170,10 @@ def WriteToDatabase(WTDstatement,dbhost,dbport,dbuser,dbpassword,dbdatabase):
         logger.info(e.pgerror)
         logger.info("unknown Error")
         logger.info(e)
+        logger.info(fromfunction)
+    
+    finally:
+        WTDstatement = None
 
 ########################################
 # main function                        #
@@ -169,7 +185,7 @@ def main(WTDstatement):
     testsql = """UPDATE supervision_chpgeodata SET CHPIDGEO = '{5}',
       CHPInoperation = '{0}', CHPReady = '{1}', CHPWarning = '{2}', CHPMalfunction = '{3}',
       CHPOff = '{4}', CHPLastUpdate = '{6}', CHPDevStatus='{7}' WHERE CHPIDGEO = '{5}'""".format(1, 0, 0, 0, 0, 1541, timestamp, 'AUTO')    
-    WriteToDatabase(WTDstatement,'134.255.244.20', 3306, "django", "7qhhr5DFqkAzEpB8", "tsupervision")
+    WriteToDatabase(WTDstatement,'xxx.xxx.xxx.xxx', 3306, "xxx", "xxx", "xxx")
 
     # quit python script
     sys.exit(0)

@@ -18,6 +18,7 @@ import sys
 import os
 import datetime
 import logging
+import uuid
 from logging.handlers import RotatingFileHandler
 from time import *
 
@@ -47,8 +48,6 @@ logger.addHandler(handler)
 
     
 def getErrorText(data,dbhost,dbport,dbuser,dbpassword,dbdatabase,emailsender,emailsmtpserver,emailsmtpusername,emailsmtppassword,emailsmtpport):
-    #Create Dataset
-    errorvalue = []
     
     #Create Alarmtext
     #create Alarmlist
@@ -71,7 +70,7 @@ def getErrorText(data,dbhost,dbport,dbuser,dbpassword,dbdatabase,emailsender,ema
     
     deviceID = data["deviceid"] # Genset ID 
     
-    if Data["Alarmtext1"]:
+    if data["Alarmtext1"]:
         funcswitchID = 2 # Funcswitch ID
     else:
         funcswitchID = 1
@@ -88,25 +87,16 @@ def getErrorText(data,dbhost,dbport,dbuser,dbpassword,dbdatabase,emailsender,ema
     else:
         pass #Weiterleitung im Programm, keine fehler im Genset
     
-    #if funcswitchID == 2 or funcswitchID == 1:
-        #try:
-            ##-----------
-            ##Update Warnung
-            #sqlBHKWerror = """UPDATE supervision_chpgeodata SET deviceid = '{0}', alarmtime = '{1}', alarm1 = '{2}', alarm2 = '{3}', alarm3 = '{4}', alarm4 = '{5}', alarm5 = '{6}', CHPAlarm6 = '{7}' WHERE deviceid = '{0}'""".format(deviceID, timestamp, genalarm1, genalarm2, genalarm3, genalarm4, genalarm5)
-    
-            ##write informaiton to DB
-            #dbcom.WriteToDatabase(sqlBHKWerror, dbhost, dbport, dbuser, dbpassword, dbdatabase)    
-
-        #except Exception as e:
-            #logger.error(str(e))
-    
     if funcswitchID == 2:
         try:
+            
+            #Create Unique ID for Insert into Database
+            myuuid = str(uuid.uuid4())
             #-----------
             #Write Errorlog to Database
-            sqlerrorlog = """INSERT INTO supervision_errorlog (deviceid, alarmtime, alarm1, alarm2, alarm3, alarm4, alarm5, alarmInfo) VALUE ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}')""".format(deviceID, timestamp, genalarm1, genalarm2, genalarm3, genalarm4, genalarm5, genalarm1)
+            sqlerrorlog = """INSERT INTO supervision_errorlog (id, deviceid_id, alarmtime, alarm1, alarm2, alarm3, alarm4, alarm5, "alarmInfo") VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}', '{6}', '{7}', '{8}')""".format(myuuid, data["deviceid_id"], timestamp, genalarm1, genalarm2, genalarm3, genalarm4, genalarm5, " ")
 
             #write informaiton to DB
-            dbcom.WriteToDatabase(sqlerrorlog, dbhost, dbport, dbuser, dbpassword, dbdatabase)
+            dbcom.WriteToDatabase(sqlerrorlog, dbhost, dbport, dbuser, dbpassword, dbdatabase, "ComAp_Errortext.getErrorText")
         except Exception as e:
             logger.info(str(e))

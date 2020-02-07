@@ -103,7 +103,7 @@ class errorlog(models.Model):
     alarm3 = models.CharField(max_length=25, default=' ', editable=True, verbose_name="Alarm Pos3") #Alarm3
     alarm4 = models.CharField(max_length=25, default=' ', editable=True, verbose_name="Alarm Pos4") #Alarm4
     alarm5 = models.CharField(max_length=25, default=' ', editable=True, verbose_name="Alarm Pos5") #Alarm5
-    alarmInfo = models.TextField(verbose_name="Info") #General Informaition for Users
+    alarmInfo = models.TextField(default='',verbose_name="Info") #General Informaition for Users
     
         
     # Label fuer Tabellenname
@@ -117,13 +117,13 @@ class errorlog(models.Model):
         """
         Returns the url to access a particular instance of MyModelName.
         """
-        return reverse('model-detail-view', args=[str(self.deviceid)])
-        
+        return reverse('model-detail-view', args=[str(self.id)])
+            
     def __str__(self):
         """
         String for representing the MyModelName object (in Admin site etc.)
         """
-        return self.deviceid    
+        return str(self.deviceid)    
 
 #heating, cooling, Air condition, santaery
 class hcasdata(models.Model):
@@ -219,13 +219,13 @@ class chpdata(models.Model):
         """
         Returns the url to access a particular instance of MyModelName.
         """
-        return reverse('model-detail-view', args=[str(self.deviceid)])
+        return reverse('model-detail-view', args=[str(self.id)])
             
     def __str__(self):
         """
         String for representing the MyModelName object (in Admin site etc.)
         """
-        return self.deviceid
+        return str(self.deviceid)
         
 #Emergency genset controller
 class egcdata(models.Model):

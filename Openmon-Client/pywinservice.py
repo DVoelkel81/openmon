@@ -8,6 +8,7 @@ import os
 import inspect
 import logging
 import time
+import sys
 from logging.handlers import RotatingFileHandler
 
 
@@ -63,8 +64,8 @@ class AppServerSvc (win32serviceutil.ServiceFramework):
 
     def main(self):
         # your code could go here
-        import Modbusread_client_v8
-        import Modbusread_Pcount_V2
+        import Modbusread_client_v10
+        #import Modbusread_Pcount_V2
         import cmd_send
         import sqlite3
         import datetime
@@ -90,11 +91,11 @@ class AppServerSvc (win32serviceutil.ServiceFramework):
                 cmd_send.modbussendreset()
                 
                 #Ausfuehren des Modbus Lese und Uebertragungsscript
-                Modbusread_client_v8.modbusreadclient()
+                Modbusread_client_v10.modbusreadclient()
 
-                t=threading.Thread(target=Modbusread_Pcount_V2.StartPcount,name='Modbuscount')
-                t.setDaemon(True)
-                t.start()
+                #t=threading.Thread(target=Modbusread_Pcount_V2.StartPcount,name='Modbuscount')
+                #t.setDaemon(True)
+                #t.start()
                 
                 #Starte die Leistungszaehlungsuebertragung
                 #Modbusread_Pcount.StartPcount()
@@ -111,5 +112,12 @@ class AppServerSvc (win32serviceutil.ServiceFramework):
                            
             
            
-if __name__ == '__main__':  
-    win32serviceutil.HandleCommandLine(AppServerSvc)
+if __name__ == '__main__':
+    #is required for pyinstaller that interpreter canrefrer to pywin in own folder
+    if len(sys.argv) == 1:
+        servicemanager.Initialize()
+        servicemanager.PrepareToHostSingle(AppServerSvc)
+        servicemanager.StartServiceCtrlDispatcher()
+    else:
+        win32serviceutil.HandleCommandLine(AppServerSvc)    
+    #win32serviceutil.HandleCommandLine(AppServerSvc)

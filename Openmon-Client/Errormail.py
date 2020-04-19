@@ -52,13 +52,13 @@ sender = 'stoerung@tuxhornbhkw.de'
 
 # fqdn of the mail server
 #smtpserver = 'pro.eu.turbo-smtp.com'
-smtpserver = 'mail.tuxhornbhkw.de'
+smtpserver = 'XXX'
 
 # username for the SMTP authentication
-smtpusername = 'stoerung@tuxhornbhkw.de'
+smtpusername = 'XX'
 
 # password for the SMTP authentication
-smtppassword = '68nq5shgaTeujwnK'
+smtppassword = 'XXX'
 
 #smtp Port selection
 smtpport = '587'

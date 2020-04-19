@@ -65,7 +65,10 @@ try:
     SQL_Command = """SELECT * from settings"""
     cursor.execute(SQL_Command)
     result = cursor.fetchone()
-    gennumber = result[1]
+    deviceid = result[1]
+    omdbo = result[5]
+    devicetyp = result[6]
+    manufacturer = result[7]
     databaseserver = result[3]
     databaseport = result[4]
     result = None #release variable
@@ -117,7 +120,10 @@ def modbusreadclient():
         data = {}
         
         #Insert Gensetnumber
-        data["deviceid"] = gennumber
+        data["deviceid"] = deviceid
+        data["deviceid_id"] = omdbo
+        data["devicetyp"] = devicetyp
+        data["manufacturer"] = manufacturer
         
         #Read SQl for Modbus
         

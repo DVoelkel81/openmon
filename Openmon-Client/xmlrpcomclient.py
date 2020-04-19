@@ -33,7 +33,7 @@ logger.addHandler(handler)
 
 
 def sendchp(data,databaseserver,databaseport):
-    server = xmlrpc.client.ServerProxy("http://" + databaseserver + ":" + databaseport +"/", allow_none=False, verbose=False)
+    server = xmlrpc.client.ServerProxy("https://" + databaseserver + ":" + databaseport +"/xmltest", allow_none=False, verbose=False)
    
     try:
         #logger.info(data)

@@ -36,6 +36,8 @@ def xmltest():
 
     myvalues["deviceid_id"] = "5668c90a-80ed-4b7b-a467-f4d9789982fb"
     myvalues["deviceid"] = 1719
+    myvalues["devicetyp"] = 1101
+    myvalues["manufacturer"] = 1100
     myvalues["statusword1"]= 30201
     myvalues["statusword2"]= 30202
     myvalues["statusword3"]= 30203
@@ -91,8 +93,8 @@ def xmltest():
     myvalues["oilpressure"] = 8
     
     
-    databaseserver = "134.255.244.24"
-    databaseport = "8000"
+    databaseserver = "test1.openmon.net"
+    databaseport = "443"
 
     
     xmlrpcomclient.sendchp(myvalues,databaseserver,databaseport)
